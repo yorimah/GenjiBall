@@ -7,16 +7,11 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    [SerializeField] int FPS;
-    [SerializeField] float gameSpeed;
-    [SerializeField] int playerLife;
+    [SerializeField] int FPS = 60;
+    [SerializeField] float gameSpeed = 1;
     public LayerMask playerLayer;
     public LayerMask enemyLayer;
     public Player player;
-
-    int remainPlayerLife;
-    Score score;
-    Score HiScore;
 
     private void Awake()
     {
@@ -24,8 +19,6 @@ public class GameManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-            score = new Score();
-            HiScore = new Score();
         }
         else
         {
@@ -48,8 +41,6 @@ public class GameManager : MonoBehaviour
         changeGameSpeed(gameSpeed);
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        remainPlayerLife = playerLife;
-        UIManager.instance.updatePlayerLife(remainPlayerLife);
     }
 
     public void changeGameSpeed(float speed)
@@ -62,35 +53,5 @@ public class GameManager : MonoBehaviour
     {
         player = FindObjectOfType<Player>();
         if (player == null) { return; }
-
-        player.damageAction += decreasePlayerLife;
-    }
-
-    void decreasePlayerLife()
-    {
-        remainPlayerLife--;
-        if (remainPlayerLife <= 0)
-        {
-            remainPlayerLife = 0;
-            player.gameObject.SetActive(false);
-        }
-        UIManager.instance.updatePlayerLife(remainPlayerLife);
-    }
-
-    public void addScore(int value)
-    {
-        score.addScore(value);
-        int currentScore= score.getCurrentScore();
-        UIManager.instance.updateScore(currentScore);
-        if (HiScore.getCurrentScore() < currentScore)
-        {
-            HiScore.setScpre(currentScore);
-            UIManager.instance.updateHiScore(currentScore);
-        }
-    }
-
-    void resetScore()
-    {
-        score.resetScore();
     }
 }

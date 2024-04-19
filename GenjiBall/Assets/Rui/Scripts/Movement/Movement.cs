@@ -8,10 +8,12 @@ public class Movement : MonoBehaviour
     public Vector3 Velocity { get => velocity; set => velocity = value; }
 
     Transform myTransform;
+    Rigidbody rb;
 
     private void Start()
     {
         myTransform = transform;
+        rb = GetComponent<Rigidbody>();
     }
 
     private void FixedUpdate()
@@ -21,7 +23,8 @@ public class Movement : MonoBehaviour
 
     void applyVelocity()
     {
-        myTransform.Translate(velocity * Time.timeScale, Space.World);
+        //myTransform.Translate(velocity * Time.timeScale, Space.World);
+        rb.velocity = velocity;
     }
 
     public void changeVelocity(float x, float y, float z)

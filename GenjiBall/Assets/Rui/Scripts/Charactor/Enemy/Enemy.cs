@@ -4,18 +4,30 @@ using UnityEngine;
 
 public class Enemy : Charactor
 {
-    [Header("")]
-    [SerializeField] int score;
+    [SerializeField] float moveSpeed;
+    [SerializeField] float moveScale;
 
+    float count;
+    Vector3 defaultPosition;
+    Transform myTransform;
     public new void Start()
     {
         base.Start();
         dieAction = _dieAction;
+        myTransform = transform;
+        defaultPosition = myTransform.position;
     }
 
     void _dieAction()
     {
         gameObject.SetActive(false);
-        GameManager.instance.addScore(score);
+    }
+
+    private void Update()
+    {
+        count += moveSpeed;
+        Vector3 pos = new Vector3();
+        pos.x = Mathf.Sin(Mathf.Deg2Rad * count) * moveSpeed;
+        myTransform.position = defaultPosition + pos;
     }
 }

@@ -8,10 +8,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float moveSpeed;
     [SerializeField] Transform forwardObject;
 
+    Transform myTransform;
     Movement movement;
 
     private void Start()
     {
+        myTransform = transform;
         movement = GetComponent<Movement>();
     }
 
@@ -29,5 +31,14 @@ public class PlayerMovement : MonoBehaviour
         vector = vector.normalized * moveSpeed;
         movement.changeVelocity_x(vector.x);
         movement.changeVelocity_z(vector.z);
+
+        facingDirectionOfMovement(vector);
+    }
+
+    void facingDirectionOfMovement(Vector3 dir)
+    {
+        if (dir == Vector3.zero) { return; }
+
+        myTransform.forward = dir;
     }
 }
