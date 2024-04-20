@@ -54,6 +54,9 @@ public class PlayerInputAction : MonoBehaviour
 
     private void inputMoveCamera(InputAction.CallbackContext obj)
     {
+        if (inputMove == null) { return; }
+
+        //　カメラの移動でもプレイヤーの向きの更新をさせたいため
         inputMove(moveVector);
     }
 }

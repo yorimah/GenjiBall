@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Enemy : Charactor
 {
+    [Header("")]
     [SerializeField] float moveSpeed;
     [SerializeField] float moveScale;
 

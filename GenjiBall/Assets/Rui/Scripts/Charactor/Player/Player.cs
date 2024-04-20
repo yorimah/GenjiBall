@@ -14,10 +14,11 @@ public class Player : Charactor
         playerMovement = GetComponent<PlayerMovement>();
         playerInput = GetComponent<PlayerInputAction>();
         playerInput.inputMove = (Vector2 vector) => playerMovement.OnMove(vector);
-        damageAction += _damageAction;
+        dieAction += _dieAction;
     }
 
-    void _damageAction()
+    void _dieAction()
     {
+        gameObject.SetActive(false);
     }
 }

@@ -2,11 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Charactor : MonoBehaviour
+public class Charactor : MonoBehaviour, IDamageable
 {
-    [SerializeField] int MaxHP;
 
     Status status;
+    [SerializeField] int MaxHP;
+    [SerializeField] Transform model;
+    public CharactorAnimation charactorAnimation { get; private set; }
+
+    Attack attack;
 
     public delegate void DamageAction();
     public DamageAction damageAction;
@@ -16,6 +20,14 @@ public class Charactor : MonoBehaviour
     public void Start()
     {
         status = new Status(MaxHP);
+        charactorAnimation = model.GetComponent<CharactorAnimation>();
+        attack = model.GetComponent<Attack>();
+        if (attack != null) { attack.setInputAttackAction(startAttack); }
+    }
+
+    void IDamageable.damage(int value)
+    {
+        damage(value);
     }
 
     public void damage(int damageValue)
@@ -35,5 +47,10 @@ public class Charactor : MonoBehaviour
     public bool isDying()
     {
         return status.getHP().getCurrentHP() <= 0;
+    }
+
+    void startAttack()
+    {
+        charactorAnimation.startAttack();
     }
 }

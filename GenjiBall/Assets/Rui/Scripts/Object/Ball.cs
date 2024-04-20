@@ -4,17 +4,24 @@ using UnityEngine;
 using AddLayer;
 
 [RequireComponent(typeof(Movement))]
-public class Ball : MonoBehaviour
+public class Ball : MonoBehaviour, IDamageable
 {
-    [SerializeField,Tooltip("èâÇﬂÇÃë¨ìx")] float startSpeed;
-    [SerializeField,Tooltip("â¡ë¨ÇµÇƒÇ¢Ç≠ë¨ìx")] float addSpeed;
-    [SerializeField,Tooltip("ÇPÉtÉåÅ[ÉÄÇ≈âÒì]Ç∑ÇÈäpìx")] float rotationAnglePerFrame;
+    [SerializeField, Tooltip("èâÇﬂÇÃë¨ìx")] float startSpeed;
+    [SerializeField, Tooltip("â¡ë¨ÇµÇƒÇ¢Ç≠ë¨ìx")] float addSpeed;
+    [SerializeField, Tooltip("ÇPÉtÉåÅ[ÉÄÇ≈âÒì]Ç∑ÇÈäpìx")] float rotationAnglePerFrame;
     [SerializeField] FindObject findEnemy;
 
     float currentSpeed;
     Transform myTransform;
-    [SerializeField] Transform targetEnemy;
+    [SerializeField] Transform target;
     Movement movement;
+
+    void IDamageable.damage(int value)
+    {
+        findEnemy.startFind();
+        currentSpeed += addSpeed;
+    }
+
 
     private void Start()
     {
@@ -32,9 +39,9 @@ public class Ball : MonoBehaviour
 
     void turnToEnemy()
     {
-        if (targetEnemy == null) { return; }
+        if (target == null) { return; }
 
-        Vector3 fromMyTotarget = (targetEnemy.position - myTransform.position).normalized;
+        Vector3 fromMyTotarget = (target.position - myTransform.position).normalized;
         Vector3 forward = myTransform.forward;
         Vector3 cross = Vector3.Cross(forward, fromMyTotarget);
         float angle = Vector3.SignedAngle(forward, fromMyTotarget, cross);
@@ -44,7 +51,7 @@ public class Ball : MonoBehaviour
 
     void flyToEnemy()
     {
-        if (targetEnemy == null) { return; }
+        if (target == null) { return; }
 
         movement.changeVelocity(myTransform.forward * currentSpeed);
     }
@@ -68,26 +75,21 @@ public class Ball : MonoBehaviour
             }
         }
 
-        targetEnemy = foundList[index].transform;
+        target = foundList[index].transform;
         myTransform.forward = fromMyToClosestEnemy.normalized;
     }
 
     private void OnCollisionEnter(Collision coll)
     {
-        if(coll.gameObject.TryGetComponent(out Movement _movement) == false) { return; }
+        if (coll.gameObject.TryGetComponent(out IDamageable damageable) == false) { return; }
 
-        currentSpeed += addSpeed;
-        if (LayerFunc.checkHitLayer(coll.gameObject, GameManager.instance.playerLayer) == true)
-        {
-            findEnemy.startFind();
-        }
-
+        damageable.damage(10);
         if (LayerFunc.checkHitLayer(coll.gameObject, GameManager.instance.enemyLayer) == true)
         {
+            currentSpeed += addSpeed;
             Vector3 dir = GameManager.instance.player.transform.position - myTransform.position;
-            movement.changeVelocity(dir.normalized * currentSpeed);
+            target = GameManager.instance.player.transform;
             myTransform.forward = dir.normalized;
-            targetEnemy = null;
         }
     }
 }
