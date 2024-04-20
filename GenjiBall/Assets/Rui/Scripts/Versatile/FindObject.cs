@@ -36,13 +36,6 @@ public class FindObject : MonoBehaviour
     IEnumerator find()
     {
         yield return null;
-        while (true)
-        {
-            if (count <= 0) { break; }
-
-            count--;
-            yield return null;
-        }
 
         _collider.enabled = false;
         //　対象のオブジェクトが見つからなかった時は処理をしない
@@ -55,7 +48,6 @@ public class FindObject : MonoBehaviour
     {
         if (LayerFunc.checkHitLayer(other.gameObject, targetLayer) == false) { return; }
 
-        count = 2;
         foundObjectList.Add(other.gameObject);
     }
 }

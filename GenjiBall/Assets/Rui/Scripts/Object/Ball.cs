@@ -9,7 +9,7 @@ public class Ball : MonoBehaviour, IDamageable
     [SerializeField, Tooltip("èâÇﬂÇÃë¨ìx")] float startSpeed;
     [SerializeField, Tooltip("â¡ë¨ÇµÇƒÇ¢Ç≠ë¨ìx")] float addSpeed;
     [SerializeField, Tooltip("ÇPÉtÉåÅ[ÉÄÇ≈âÒì]Ç∑ÇÈäpìx")] float rotationAnglePerFrame;
-    [SerializeField] FindObject findEnemy;
+    [SerializeField] StageEnemyManager stageEnemyManager;
 
     float currentSpeed;
     Transform myTransform;
@@ -18,7 +18,7 @@ public class Ball : MonoBehaviour, IDamageable
 
     void IDamageable.damage(int value)
     {
-        findEnemy.startFind();
+        setTargetEnemy();
         currentSpeed += addSpeed;
     }
 
@@ -28,7 +28,6 @@ public class Ball : MonoBehaviour, IDamageable
         currentSpeed = startSpeed;
         myTransform = transform;
         movement = GetComponent<Movement>();
-        findEnemy.setFoundObjecyAction((List<GameObject> foundList) => setTargetEnemy(foundList));
     }
 
     private void Update()
@@ -56,27 +55,13 @@ public class Ball : MonoBehaviour, IDamageable
         movement.changeVelocity(myTransform.forward * currentSpeed);
     }
 
-    void setTargetEnemy(List<GameObject> foundList)
+    void setTargetEnemy()
     {
-        int index = 0;
-        int length = foundList.Count;
-        Vector3 fromMyToClosestEnemy = foundList[0].transform.position - myTransform.position;
+        target = stageEnemyManager.getEnemyAtShortestDistance(myTransform);
+        if (target == null) { Debug.Log("ìGÇ™Ç¢Ç‹ÇπÇÒ");return; }
 
-        if (length > 1)
-        {
-            for (int i = 1; i < length; i++)
-            {
-                float distance = (foundList[i].transform.position - myTransform.position).sqrMagnitude;
-                //Å@å©Ç¬ÇØÇΩìGÇ∆ÇÃãóó£Ç™å©Ç¬ÇØÇΩç≈è¨ÇÃãóó£ÇÊÇËí∑Ç¢Ç»ÇÁèàóùÇÇµÇ»Ç¢
-                if (distance >= fromMyToClosestEnemy.sqrMagnitude) { continue; }
-
-                index = i;
-                fromMyToClosestEnemy = foundList[i].transform.position - myTransform.position;
-            }
-        }
-
-        target = foundList[index].transform;
-        myTransform.forward = fromMyToClosestEnemy.normalized;
+        Vector3 dir = target.position - myTransform.position;
+        myTransform.forward = dir.normalized;
     }
 
     private void OnCollisionEnter(Collision coll)
@@ -87,8 +72,9 @@ public class Ball : MonoBehaviour, IDamageable
         if (LayerFunc.checkHitLayer(coll.gameObject, GameManager.instance.enemyLayer) == true)
         {
             currentSpeed += addSpeed;
-            Vector3 dir = GameManager.instance.player.transform.position - myTransform.position;
-            target = GameManager.instance.player.transform;
+            Transform player= GameManager.instance.player.transform;
+            Vector3 dir = player.position - myTransform.position;
+            target = player.transform;
             myTransform.forward = dir.normalized;
         }
     }
