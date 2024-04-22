@@ -4,7 +4,7 @@ using UnityEngine;
 using AddLayer;
 
 [RequireComponent(typeof(Movement))]
-public class Ball : MonoBehaviour, IDamageable
+public class Ball : MonoBehaviour, IDirectionable,IPerformer
 {
     [SerializeField] int damage;
     [SerializeField, Tooltip("初めの速度")] float startSpeed;
@@ -17,9 +17,21 @@ public class Ball : MonoBehaviour, IDamageable
     [SerializeField] Transform target;
     Movement movement;
 
-    void IDamageable.damage(int _)
+    void IDirectionable.GiveA_Direction(Vector3 _direction)
     {
-        setEnemyAsTargets();
+        myTransform.forward = _direction.normalized;
+    }
+
+    void IPerformer.ExecutionByPlayer()
+    {
+        //　プレイヤーによってボールが跳ね返されるならターゲットを敵にする
+        setEnemyAsTarget();
+    }
+
+    void IPerformer.ExecutionByEnemy()
+    {
+        //　敵によってボールが跳ね返されるならターゲットをプレイヤーにする
+        setPlayerAsTarget();
     }
 
     private void Start()
@@ -54,7 +66,7 @@ public class Ball : MonoBehaviour, IDamageable
         movement.changeVelocity(myTransform.forward * currentSpeed);
     }
 
-    void setEnemyAsTargets()
+    void setEnemyAsTarget()
     {
         Transform enemy = stageEnemyManager.getEnemyAtShortestDistance(myTransform);
         if (enemy == null) { Debug.Log("敵がいません");return; }
@@ -71,8 +83,6 @@ public class Ball : MonoBehaviour, IDamageable
     void setTarget(Transform target)
     {
         this.target = target.transform;
-        Vector3 dir = target.position - myTransform.position;
-        myTransform.forward = dir.normalized;
         currentSpeed += addSpeed;
     }
 
@@ -101,9 +111,6 @@ public class Ball : MonoBehaviour, IDamageable
                 target = null;
                 return; 
             }
-            
-            //　敵に当たると次はプレイヤーに向かう
-            setPlayerAsTarget();
         }
     }
 }

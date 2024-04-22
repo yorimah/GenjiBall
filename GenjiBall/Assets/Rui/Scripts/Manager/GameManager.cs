@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public LayerMask playerLayer;
     public LayerMask enemyLayer;
     public bool isPlayingGame { get; private set; } = true;
-    public Player player { get; private set; }
+    public Player.PlayerManager player { get; private set; }
 
 
     private void Awake()
@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
 
     public void setPlayer()
     {
-        player = FindObjectOfType<Player>();
+        player = FindObjectOfType<Player.PlayerManager>();
         if (player == null) { return; }
     }
 

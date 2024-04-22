@@ -266,9 +266,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 1
-  startSpeed: 15
-  addSpeed: 0.5
-  rotationAnglePerFrame: 5
+  startSpeed: 20
+  addSpeed: 1
+  rotationAnglePerFrame: 4
   stageEnemyManager: {fileID: 1460496990}
   target: {fileID: 0}
 --- !u!114 &211775151

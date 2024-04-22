@@ -17,7 +17,7 @@ public class Attack : MonoBehaviour
         attackInput.inputAttack = () => inputAttackAction();
     }
 
-    public void setInputAttackAction(InputAttackAction action)
+    public void SetInputAttackAction(InputAttackAction action)
     {
         inputAttackAction = action;
     }

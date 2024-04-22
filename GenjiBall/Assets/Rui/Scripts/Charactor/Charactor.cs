@@ -22,7 +22,7 @@ public class Charactor : MonoBehaviour, IDamageable
         status = new Status(MaxHP);
         charactorAnimation = model.GetComponent<CharactorAnimation>();
         attack = model.GetComponent<Attack>();
-        if (attack != null) { attack.setInputAttackAction(startAttack); }
+        if (attack != null) { attack.SetInputAttackAction(startAttack); }
     }
 
     void IDamageable.damage(int value)

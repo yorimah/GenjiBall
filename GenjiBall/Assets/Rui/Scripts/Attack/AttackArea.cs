@@ -6,13 +6,22 @@ using AddLayer;
 public class AttackArea : MonoBehaviour
 {
     [SerializeField] LayerMask hitLayerMask;
+    Transform mainCamera;
+
+    private void Start()
+    {
+        mainCamera = Camera.main.transform;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
         if (LayerFunc.checkHitLayer(other.gameObject, hitLayerMask) == false) { return; }
 
-        if (other.TryGetComponent(out IDamageable damageable) == false) { return; }
+        if (other.TryGetComponent(out IDirectionable directionable) == false) { return; }
 
-        damageable.damage(0);
+        directionable.GiveA_Direction(mainCamera.forward);
+        if (other.TryGetComponent(out IPerformer performer) == false) { return; }
+
+        performer.ExecutionByPlayer();
     }
 }
