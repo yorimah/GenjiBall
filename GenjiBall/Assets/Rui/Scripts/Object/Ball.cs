@@ -6,6 +6,7 @@ using AddLayer;
 [RequireComponent(typeof(Movement))]
 public class Ball : MonoBehaviour, IDamageable
 {
+    [SerializeField] int damage;
     [SerializeField, Tooltip("初めの速度")] float startSpeed;
     [SerializeField, Tooltip("加速していく速度")] float addSpeed;
     [SerializeField, Tooltip("１フレームで回転する角度")] float rotationAnglePerFrame;
@@ -16,12 +17,10 @@ public class Ball : MonoBehaviour, IDamageable
     [SerializeField] Transform target;
     Movement movement;
 
-    void IDamageable.damage(int value)
+    void IDamageable.damage(int _)
     {
-        setTargetEnemy();
-        currentSpeed += addSpeed;
+        setEnemyAsTargets();
     }
-
 
     private void Start()
     {
@@ -32,11 +31,11 @@ public class Ball : MonoBehaviour, IDamageable
 
     private void Update()
     {
-        turnToEnemy();
-        flyToEnemy();
+        turnToTarget();
+        flyToTarget();
     }
 
-    void turnToEnemy()
+    void turnToTarget()
     {
         if (target == null) { return; }
 
@@ -48,34 +47,63 @@ public class Ball : MonoBehaviour, IDamageable
         myTransform.forward = Vector3.Lerp(forward, fromMyTotarget, turnPercent);
     }
 
-    void flyToEnemy()
+    void flyToTarget()
     {
         if (target == null) { return; }
 
         movement.changeVelocity(myTransform.forward * currentSpeed);
     }
 
-    void setTargetEnemy()
+    void setEnemyAsTargets()
     {
-        target = stageEnemyManager.getEnemyAtShortestDistance(myTransform);
-        if (target == null) { Debug.Log("敵がいません");return; }
+        Transform enemy = stageEnemyManager.getEnemyAtShortestDistance(myTransform);
+        if (enemy == null) { Debug.Log("敵がいません");return; }
 
+        setTarget(enemy);
+    }
+
+    void setPlayerAsTarget()
+    {
+        Transform player = GameManager.instance.player.transform;
+        setTarget(player);
+    }
+
+    void setTarget(Transform target)
+    {
+        this.target = target.transform;
         Vector3 dir = target.position - myTransform.position;
         myTransform.forward = dir.normalized;
+        currentSpeed += addSpeed;
     }
 
     private void OnCollisionEnter(Collision coll)
     {
         if (coll.gameObject.TryGetComponent(out IDamageable damageable) == false) { return; }
 
-        damageable.damage(10);
+        damageable.damage(damage);
+
+        if (LayerFunc.checkHitLayer(coll.gameObject, GameManager.instance.playerLayer) == true)
+        {
+            GameManager.instance.gameOver();
+            movement.stopMoving();
+            target = null;
+            return;
+        }
+
         if (LayerFunc.checkHitLayer(coll.gameObject, GameManager.instance.enemyLayer) == true)
         {
-            currentSpeed += addSpeed;
-            Transform player= GameManager.instance.player.transform;
-            Vector3 dir = player.position - myTransform.position;
-            target = player.transform;
-            myTransform.forward = dir.normalized;
+            stageEnemyManager.excludeInactivity();
+            //　ステージ内の敵がいないならゲームクリアになる
+            if (stageEnemyManager.getNumberOfEnemyRemaining() == 0)
+            {
+                GameManager.instance.gameClear();
+                movement.stopMoving();
+                target = null;
+                return; 
+            }
+            
+            //　敵に当たると次はプレイヤーに向かう
+            setPlayerAsTarget();
         }
     }
 }

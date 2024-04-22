@@ -23,7 +23,6 @@ public class Movement : MonoBehaviour
 
     void applyVelocity()
     {
-        //myTransform.Translate(velocity * Time.timeScale, Space.World);
         rb.velocity = velocity;
     }
 

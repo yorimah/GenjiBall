@@ -22,10 +22,24 @@ public class StageEnemyManager : MonoBehaviour
         }
     }
 
+    // リスト内の非アクティブのオブジェクトをリストから除外する
+    public void excludeInactivity()
+    {
+        int length = enemyList.Count;
+        for (int i = 0; i < length; i++)
+        {
+            if (enemyList[i].gameObject.activeSelf == false)
+            {
+                enemyList.RemoveAt(i);
+                i--;
+                length--;
+                continue;
+            }
+        }
+    }
+
     public Transform getEnemyAtShortestDistance(Transform fromObject)
     {
-        excludeInactivity();
-
         int length = enemyList.Count;
         if (length == 0) { return null; }
 
@@ -43,18 +57,8 @@ public class StageEnemyManager : MonoBehaviour
         return targetEnemy;
     }
 
-    void excludeInactivity()
+    public int getNumberOfEnemyRemaining()
     {
-        int length = enemyList.Count;
-        for (int i = 0; i < length; i++)
-        {
-            if (enemyList[i].gameObject.activeSelf == false)
-            {
-                enemyList.RemoveAt(i);
-                i--;
-                length--;
-                continue;
-            }
-        }
+        return enemyList.Count;
     }
 }

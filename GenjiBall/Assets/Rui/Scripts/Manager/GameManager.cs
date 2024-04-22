@@ -11,7 +11,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] float gameSpeed = 1;
     public LayerMask playerLayer;
     public LayerMask enemyLayer;
-    public Player player;
+    public bool isPlayingGame { get; private set; } = true;
+    public Player player { get; private set; }
+
 
     private void Awake()
     {
@@ -53,5 +55,17 @@ public class GameManager : MonoBehaviour
     {
         player = FindObjectOfType<Player>();
         if (player == null) { return; }
+    }
+
+    public void gameClear()
+    {
+        Debug.Log("ゲームクリア");
+        isPlayingGame = false;
+    }
+
+    public void gameOver()
+    {
+        Debug.Log("ゲームオーバー");
+        isPlayingGame = false;
     }
 }
