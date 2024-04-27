@@ -15,9 +15,36 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Attack",
+                    "name": "Attack_CloseRange",
                     "type": "Button",
                     "id": "376f9b39-aafd-4e6f-90d3-d7c6760c30a2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Attack_LongRange",
+                    "type": "Button",
+                    "id": "6b3d0365-9663-4508-8326-4734ffc7e2d3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Avoid",
+                    "type": "Button",
+                    "id": "3b3eb8e7-2894-436b-819a-6a426b6c2aa8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Defend",
+                    "type": "Button",
+                    "id": "47dfb8d9-dcc6-40cc-bc38-c236aa03d282",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -164,7 +191,40 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Attack",
+                    "action": "Attack_CloseRange",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "afb19187-07c2-4349-a422-83fab3c82ecb",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Attack_LongRange",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "579ecb19-6aa2-43a6-baec-0d6cb18c2897",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Avoid",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8bf96e7c-6bc0-4746-bb05-c7d3b7785d4c",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Defend",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

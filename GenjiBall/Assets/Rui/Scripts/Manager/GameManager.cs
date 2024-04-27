@@ -14,13 +14,13 @@ public class GameManager : MonoBehaviour
     public bool isPlayingGame { get; private set; } = true;
     public Player.PlayerManager player { get; private set; }
 
-
     private void Awake()
     {
         if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            setPlayer();
         }
         else
         {
@@ -29,12 +29,6 @@ public class GameManager : MonoBehaviour
         }
 
         ObjectPool.Init();
-    }
-
-
-    private void OnEnable()
-    {
-        setPlayer();
     }
 
     private void Start()

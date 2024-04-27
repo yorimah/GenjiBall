@@ -14,14 +14,14 @@ public class AttackInput : MonoBehaviour
     {
         _inputController = new InputController();
 
-        _inputController.Player.Attack.started += OnAttack;
+        _inputController.Player.Attack_CloseRange.started += OnAttack;
 
         _inputController.Enable();
     }
 
     private void OnDisable()
     {
-        _inputController.Player.Attack.started -= OnAttack;
+        _inputController.Player.Attack_CloseRange.started -= OnAttack;
 
         _inputController.Disable();
     }

@@ -2,15 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using AddLayer;
+using AddMath;
 
 [RequireComponent(typeof(Movement))]
-public class Ball : MonoBehaviour, IDirectionable,IPerformer
+public class Ball : MonoBehaviour, IDirectionable, IPerformer
 {
     [SerializeField] int damage;
     [SerializeField, Tooltip("‰‚ß‚Ì‘¬“x")] float startSpeed;
     [SerializeField, Tooltip("‰Á‘¬‚µ‚Ä‚¢‚­‘¬“x")] float addSpeed;
     [SerializeField, Tooltip("‚PƒtƒŒ[ƒ€‚Å‰ñ“]‚·‚éŠp“x")] float rotationAnglePerFrame;
     [SerializeField] StageEnemyManager stageEnemyManager;
+    [SerializeField] LayerMask stageLayer;
 
     float currentSpeed;
     Transform myTransform;
@@ -43,8 +45,10 @@ public class Ball : MonoBehaviour, IDirectionable,IPerformer
 
     private void Update()
     {
-        turnToTarget();
+        //turnToTarget();
         flyToTarget();
+        //if (movement.isHittingWall == true) { movement.changeVelocity_x(-movement.Velocity.x); myTransform.forward = movement.Velocity; }
+        //if (movement.isHittingGround == true) { movement.changeVelocity_y(-movement.Velocity.y); myTransform.forward = movement.Velocity; }
     }
 
     void turnToTarget()
@@ -69,7 +73,7 @@ public class Ball : MonoBehaviour, IDirectionable,IPerformer
     void setEnemyAsTarget()
     {
         Transform enemy = stageEnemyManager.getEnemyAtShortestDistance(myTransform);
-        if (enemy == null) { Debug.Log("“G‚ª‚¢‚Ü‚¹‚ñ");return; }
+        if (enemy == null) { Debug.Log("“G‚ª‚¢‚Ü‚¹‚ñ"); return; }
 
         setTarget(enemy);
     }
@@ -88,6 +92,8 @@ public class Ball : MonoBehaviour, IDirectionable,IPerformer
 
     private void OnCollisionEnter(Collision coll)
     {
+        HitStage(coll);
+
         if (coll.gameObject.TryGetComponent(out IDamageable damageable) == false) { return; }
 
         damageable.damage(damage);
@@ -109,8 +115,41 @@ public class Ball : MonoBehaviour, IDirectionable,IPerformer
                 GameManager.instance.gameClear();
                 movement.stopMoving();
                 target = null;
-                return; 
+                return;
             }
         }
+    }
+
+    void HitStage(Collision coll)
+    {
+        if (LayerFunc.checkHitLayer(coll.gameObject, stageLayer) == false) { return; }
+
+        ContactPoint point = coll.contacts[0];
+
+        Vector3 _normal = point.normal;
+        Vector3 _normalsOfTwoVectors = Vector3.Cross(_normal, movement.OneFrameAgoVelocity.normalized).normalized;
+        //_normalsOfTwoVectors.y = Mathf.Abs(_normalsOfTwoVectors.y);
+        float _angleOfTwoVectors = Vector3.SignedAngle(_normal, movement.OneFrameAgoVelocity.normalized, _normalsOfTwoVectors);
+        Debug.Log(_angleOfTwoVectors);
+        if (_angleOfTwoVectors > 0) { _angleOfTwoVectors -= 90; }
+        if (_angleOfTwoVectors < 0) { _angleOfTwoVectors += 90; }
+        Debug.Log(_angleOfTwoVectors);
+
+        //int _signOfAngleOfTwoVectors = (int)Mathf.Sign(_angleOfTwoVectors); 
+        //_angleOfTwoVectors = (Mathf.Abs(_angleOfTwoVectors) - 90) * _signOfAngleOfTwoVectors;
+
+        //Debug.Log($"{-movement.OneFrameAgoVelocity.normalized}:{_normal}:{_normalsOfTwoVectors}");
+
+        // xŽ²‚ðŽ²‚É‚µ‚Ä–ˆ•b2“xA‰ñ“]‚³‚¹‚éQuaternion‚ðì¬i•Ï”‚ðrot‚Æ‚·‚éj
+        Vector3 eulerAngle = myTransform.eulerAngles;
+        eulerAngle.x += (-_angleOfTwoVectors * 2) * Mathf.Abs(_normal.normalized.y);
+        eulerAngle.y += (_angleOfTwoVectors * 2) * (1 - Mathf.Abs(_normal.normalized.y));
+        myTransform.eulerAngles = eulerAngle;
+
+        //Quaternion rot = Quaternion.AngleAxis(_angleOfTwoVectors * 2, Vector3.up);
+        //// Œ»Ý‚ÌŽ©M‚Ì‰ñ“]‚Ìî•ñ‚ðŽæ“¾‚·‚éB
+        //Quaternion q = myTransform.localRotation;
+        //// ‡¬‚µ‚ÄAŽ©g‚ÉÝ’è
+        //myTransform.localRotation = q * rot;
     }
 }

@@ -6,19 +6,26 @@ namespace Enemy
 {
     public class EnemyManager : Charactor
     {
-        [Header("")]
-        [SerializeField] float moveSpeed;
-        [SerializeField] float moveScale;
+        [SerializeField] AttackPatternData[] attackPatternDatas;
 
-        float count;
-        Vector3 defaultPosition;
+        int attackIndex;
+        string defaultAttackName;
         Transform myTransform;
+
+        private void OnDisable()
+        {
+            charactorAnimation.endAttackAction -= NextAttack;
+        }
+
         public new void Start()
         {
             base.Start();
             dieAction = _DieAction;
             myTransform = transform;
-            defaultPosition = myTransform.position;
+            charactorAnimation.endAttackAction += NextAttack;
+            defaultAttackName = charactorAnimation.getAnimationStateMotionName("Attack");
+            charactorAnimation.overrideAnimationClip(attackPatternDatas[0].clip[0], defaultAttackName);
+            charactorAnimation.startAttack();
         }
 
         void _DieAction()
@@ -26,32 +33,22 @@ namespace Enemy
             gameObject.SetActive(false);
         }
 
-        private void Update()
+        void NextAttack()
         {
-            Move();
+            attackIndex++;
+            AttackPatternData _pattarnData = attackPatternDatas[0];
+            if (attackIndex >= _pattarnData.clip.Length) { return; }
+
+            charactorAnimation.startAttack();
+            charactorAnimation.playAnimation(defaultAttackName);
+            StartCoroutine(overrideAnimationClip(_pattarnData));
         }
 
-        private void Move()
+        IEnumerator overrideAnimationClip(AttackPatternData _patternData)
         {
-
-            count += moveSpeed;
-            Vector3 pos = new Vector3();
-            pos.x = Mathf.Sin(Mathf.Deg2Rad * count) * moveSpeed;
-            myTransform.position = defaultPosition + pos;
+            yield return null;
+            charactorAnimation.overrideAnimationClip(_patternData.clip[attackIndex], defaultAttackName);
         }
 
-        private void OnCollisionEnter(Collision other)
-        {
-            if(other.gameObject.TryGetComponent(out IDirectionable _directionable) == false) { return; }
-
-            Vector3 angle;
-            angle.x = Random.value * 2 - 1;
-            angle.y = Random.value;
-            angle.z = Random.value * 2 - 1;
-            _directionable.GiveA_Direction(angle);
-            if (other.gameObject.TryGetComponent(out IPerformer performer) == false) { return; }
-
-            performer.ExecutionByEnemy();
-        }
     }
 }

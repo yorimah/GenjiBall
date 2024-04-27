@@ -37,9 +37,36 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Attack"",
+                    ""name"": ""Attack_CloseRange"",
                     ""type"": ""Button"",
                     ""id"": ""376f9b39-aafd-4e6f-90d3-d7c6760c30a2"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Attack_LongRange"",
+                    ""type"": ""Button"",
+                    ""id"": ""6b3d0365-9663-4508-8326-4734ffc7e2d3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Avoid"",
+                    ""type"": ""Button"",
+                    ""id"": ""3b3eb8e7-2894-436b-819a-6a426b6c2aa8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Defend"",
+                    ""type"": ""Button"",
+                    ""id"": ""47dfb8d9-dcc6-40cc-bc38-c236aa03d282"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -186,7 +213,40 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Attack"",
+                    ""action"": ""Attack_CloseRange"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""afb19187-07c2-4349-a422-83fab3c82ecb"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Attack_LongRange"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""579ecb19-6aa2-43a6-baec-0d6cb18c2897"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Avoid"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8bf96e7c-6bc0-4746-bb05-c7d3b7785d4c"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Defend"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -309,7 +369,10 @@ public partial class @InputController: IInputActionCollection2, IDisposable
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
-        m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
+        m_Player_Attack_CloseRange = m_Player.FindAction("Attack_CloseRange", throwIfNotFound: true);
+        m_Player_Attack_LongRange = m_Player.FindAction("Attack_LongRange", throwIfNotFound: true);
+        m_Player_Avoid = m_Player.FindAction("Avoid", throwIfNotFound: true);
+        m_Player_Defend = m_Player.FindAction("Defend", throwIfNotFound: true);
         // Camera
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
         m_Camera_AngleMovement = m_Camera.FindAction("AngleMovement", throwIfNotFound: true);
@@ -375,13 +438,19 @@ public partial class @InputController: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Move;
-    private readonly InputAction m_Player_Attack;
+    private readonly InputAction m_Player_Attack_CloseRange;
+    private readonly InputAction m_Player_Attack_LongRange;
+    private readonly InputAction m_Player_Avoid;
+    private readonly InputAction m_Player_Defend;
     public struct PlayerActions
     {
         private @InputController m_Wrapper;
         public PlayerActions(@InputController wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
-        public InputAction @Attack => m_Wrapper.m_Player_Attack;
+        public InputAction @Attack_CloseRange => m_Wrapper.m_Player_Attack_CloseRange;
+        public InputAction @Attack_LongRange => m_Wrapper.m_Player_Attack_LongRange;
+        public InputAction @Avoid => m_Wrapper.m_Player_Avoid;
+        public InputAction @Defend => m_Wrapper.m_Player_Defend;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -394,9 +463,18 @@ public partial class @InputController: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
-            @Attack.started += instance.OnAttack;
-            @Attack.performed += instance.OnAttack;
-            @Attack.canceled += instance.OnAttack;
+            @Attack_CloseRange.started += instance.OnAttack_CloseRange;
+            @Attack_CloseRange.performed += instance.OnAttack_CloseRange;
+            @Attack_CloseRange.canceled += instance.OnAttack_CloseRange;
+            @Attack_LongRange.started += instance.OnAttack_LongRange;
+            @Attack_LongRange.performed += instance.OnAttack_LongRange;
+            @Attack_LongRange.canceled += instance.OnAttack_LongRange;
+            @Avoid.started += instance.OnAvoid;
+            @Avoid.performed += instance.OnAvoid;
+            @Avoid.canceled += instance.OnAvoid;
+            @Defend.started += instance.OnDefend;
+            @Defend.performed += instance.OnDefend;
+            @Defend.canceled += instance.OnDefend;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -404,9 +482,18 @@ public partial class @InputController: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
-            @Attack.started -= instance.OnAttack;
-            @Attack.performed -= instance.OnAttack;
-            @Attack.canceled -= instance.OnAttack;
+            @Attack_CloseRange.started -= instance.OnAttack_CloseRange;
+            @Attack_CloseRange.performed -= instance.OnAttack_CloseRange;
+            @Attack_CloseRange.canceled -= instance.OnAttack_CloseRange;
+            @Attack_LongRange.started -= instance.OnAttack_LongRange;
+            @Attack_LongRange.performed -= instance.OnAttack_LongRange;
+            @Attack_LongRange.canceled -= instance.OnAttack_LongRange;
+            @Avoid.started -= instance.OnAvoid;
+            @Avoid.performed -= instance.OnAvoid;
+            @Avoid.canceled -= instance.OnAvoid;
+            @Defend.started -= instance.OnDefend;
+            @Defend.performed -= instance.OnDefend;
+            @Defend.canceled -= instance.OnDefend;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -518,7 +605,10 @@ public partial class @InputController: IInputActionCollection2, IDisposable
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
-        void OnAttack(InputAction.CallbackContext context);
+        void OnAttack_CloseRange(InputAction.CallbackContext context);
+        void OnAttack_LongRange(InputAction.CallbackContext context);
+        void OnAvoid(InputAction.CallbackContext context);
+        void OnDefend(InputAction.CallbackContext context);
     }
     public interface ICameraActions
     {
